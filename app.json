@@ -1,13 +1,17 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Earning Tracker",
+    "slug": "earning-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/earning-tracker-icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hussnainali.driverearnings",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +23,19 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/earning-tracker-icon.png",
+      "name": "Earning Tracker",
+      "shortName": "Earning Tracker"
+    },
+    "plugins": [
+      "@react-native-community/datetimepicker",
+      "expo-mail-composer",
+      "expo-sharing"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "570cd07f-7792-4984-99f5-6b30b81c61ad"
+      }
     }
   }
 }

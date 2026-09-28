@@ -1,0 +1,13 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {totals,monday,shift,parseAmount,validDate}=require('../src/finance.ts');
+const {calculateQasa,validMonth}=require('../src/qasa.ts');
+const base={id:'2026-08-03',date:'2026-08-03',amounts:[100000,50000,50000,300000,200000],percentage:50,notes:''};
+test('weekly acceptance: 7000 total, 3500 share',()=>assert.deepEqual(totals([base]),{amounts:base.amounts,total:700000,driver:350000,owner:350000,cash:150000}));
+test('40 percent and mixed historical shares',()=>{assert.equal(totals([{...base,percentage:40}]).driver,280000);assert.equal(totals([{...base,amounts:[1000000,0,0,0,0],percentage:40},{...base,amounts:[1000000,0,0,0,0]}]).driver,900000)});
+test('month boundary, leap day and year rollover',()=>{assert.equal(monday('2026-09-06'),'2026-08-31');assert.equal(shift('2026-12-28',6),'2027-01-03');assert.equal(validDate('2026-02-29'),false);assert.equal(validDate('2024-02-29'),true)});
+test('money handles decimals and invalid values',()=>{assert.equal(parseAmount('0,29'),29);assert.equal(parseAmount(''),0);for(const input of ['-1','abc','1.234','Infinity'])assert.throws(()=>parseAmount(input))});
+test('Qasa April matches workbook formulas',()=>{const result=calculateQasa({bolt:3523200,uber:3953900,uberRefund:78300,totalUberCash:194300,uberCashInHand:50000,totalZettle:810800,taxiTime:0,expense:0,percentage:47});assert.deepEqual(result,{uberCashInZettle:144300,okeriSwishCard:666500,totalQasa:8221900,share:3864293})});
+test('Qasa March expense follows worksheet, without double subtraction',()=>{const r=calculateQasa({bolt:1645400,uber:7325200,uberRefund:69200,totalUberCash:1076900,uberCashInHand:600000,totalZettle:605700,taxiTime:0,expense:172900,percentage:47});assert.deepEqual(r,{uberCashInZettle:304000,okeriSwishCard:301700,totalQasa:9341500,share:4390505})});
+test('Qasa derived amounts preserve negatives and rounding',()=>{const r=calculateQasa({bolt:1,uber:0,uberRefund:0,totalUberCash:0,uberCashInHand:100,totalZettle:0,taxiTime:0,expense:0,percentage:50});assert.equal(r.uberCashInZettle,-100);assert.equal(r.share,51)});
+test('month validation distinguishes years and invalid months',()=>{assert(validMonth('2026-09'));assert(!validMonth('2026-13'));assert(!validMonth('Sep'));assert(!validMonth('0000-01'))});
